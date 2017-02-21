@@ -6,18 +6,9 @@ function User(userName, userScore) {
 }
 
 //need to write method to switch players (using an array and when it finishes start at beginning)
-// User.prototype.switchPlayer = function() {
-//   for (index = 0; index < users.length; index +=1) {
-
-//   }
-// }
-
 //also need method to save and display players roll total and total score
-// User.prototype.keepScore = function() {
-
-// }
-
 //tie active user into the rollDice() method (make it a prototype beacuse it will be applied to the current user)
+
 function rollDice(turnTotal, activeUser, users) {
   //to start each roll, it IS the players turn
   var turn = true;
@@ -50,7 +41,7 @@ $(document).ready(function() {
   var userScore = 0;
 
   var activeUser = 0;
-  
+
   var users = [];
   var user1 = new User("Player 1", 0);
   var user2 = new User("Player 2", 0);
