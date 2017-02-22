@@ -5,9 +5,26 @@ function User(userName, userScore) {
   this.userScore = userScore;
 }
 
-//need to write method to switch players (using an array and when it finishes start at beginning)
-//also need method to save and display players roll total and total score
-//tie active user into the rollDice() method (make it a prototype beacuse it will be applied to the current user)
+// ****** trying to DRY out the code
+
+// function changePlayer(activeUser, users) {
+//   activeUser ++;
+//   alert("next player");
+//   if(activeUser > users.length -1 ){
+//     activeUser = 0;
+//   };
+//   console.log(activeUser);
+//   console.log(users);
+//   console.log("sup");
+// }
+//
+// function highlightPlayer(players, activeUser) { // or is it (players[activeUser]) ???
+//   var players = $("div#players").children();
+//   players.each(function() {
+//     $(this).removeClass("current-player");
+//   });
+//   $(players[activeUser]).addClass("current-player");
+// }
 
 function rollDice(turnTotal, activeUser, users) {
   //to start each roll, it IS the players turn
@@ -16,16 +33,22 @@ function rollDice(turnTotal, activeUser, users) {
   var dieNumber = Math.floor((Math.random() * 6) + 1);
   //add dieNumber to turnTotal (everytime the function is called)
   turnTotal += dieNumber;
-  //if dieNumber is 1, turnTotal becomes 0 and turn becomes false
+  //IF dieNumber is 1, turnTotal becomes 0, activeUser increments by 1 and turn becomes false
   if (dieNumber === 1) {
     turnTotal = 0;
     activeUser ++;
-    alert('next player');
-    if(activeUser > users.length -1 ){
-      activeUser = 0;
+    //IF activeUser is greater than the amount of users less one (users.length -1), activeUser becomes 0
+    if(activeUser > users.length -1 ){ //-1 because index starts at 0; if you reach the end, restart.
+      activeUser = 0; //starts array at beginning (index of 0)
     };
     turn = false;
   }
+  //addClass to indexed child of players - highlights current player
+  var players = $("div#players").children();
+  players.each(function() {
+    $(this).removeClass("current-player");
+  });
+  $(players[activeUser]).addClass("current-player");
 
   console.log(turn);
   console.log(dieNumber);
@@ -39,21 +62,18 @@ $(document).ready(function() {
   //we don't want turnTotal or userScore to start at 0
   var turnTotal = 0;
   var userScore = 0;
-
-  var activeUser = 0;
-
+  var activeUser = 0; //activeUser is just the index position of "users"
   var users = [];
   var user1 = new User("Player 1", 0);
   var user2 = new User("Player 2", 0);
-  var user3 = new User("Player 3", 0);
-  users.push(user1, user2, user3);
 
+  users.push(user1, user2);
   console.log(users);
 
   //when "roll" button is clicked
   $("button#roll-button").click(function() {
 
-    [turnTotal, activeUser] = rollDice(turnTotal,activeUser, users);
+    [turnTotal, activeUser] = rollDice(turnTotal, activeUser, users);
 
     console.log([turnTotal, activeUser]);
 
@@ -63,27 +83,32 @@ $(document).ready(function() {
 
   //when "hold" button is clicked:
   $("button#hold-button").click(function() {
-    //userScore adds turnTotal to the stored sum of userScore and zeros out turnTotal
-    //and the turn becomes false
-    // userScore += turnTotal;
-    users[activeUser].userScore += turnTotal;
-    turnTotal = 0;
-    activeUser ++;
-    alert('next player');
+    users[activeUser].userScore += turnTotal; //userScore of the current user: users[index#] adds turnTotal to the stored sum of userScore (of current user)
+    turnTotal = 0;    //zeros out turnTotal
+    activeUser ++;  //increments activeUser by 1
     if(activeUser > users.length -1 ){
       activeUser = 0;
     };
-    turn = false;
+    turn = false; //turn becomes false
 
-    console.log(users[activeUser].userScore);
+    console.log(users[activeUser].userScore); //activeUser is just the index position of "users"
     console.log(turn);
     console.log(user1);
     console.log(user2);
-    console.log(user3);
 
-    $("div#total-score h2 span").text(userScore);
+    //display players scores
+    $("div#player1 h2 span").text(user1.userScore);
+    $("div#player2 h2 span").text(user2.userScore);
 
-    if (userScore >= 100) {
+    //addClass to indexed child of players - highlights current player
+    var players = $("div#players").children();
+    players.each(function() {
+      $(this).removeClass("current-player");
+    });
+    $(players[activeUser]).addClass("current-player");
+
+    //when first player reaches 100
+    if (user1.userScore >= 100 || user2.userScore >= 100) {
       $("div#game").fadeOut();
       $("div#winner").fadeIn();
     }
